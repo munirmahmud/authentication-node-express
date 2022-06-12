@@ -73,3 +73,28 @@ exports.signin = async (req, res) => {
     });
   });
 };
+
+exports.getUsers = async (req, res) => {
+  const { user } = req;
+
+  if (!user) {
+    return res.status(403).json({ status: 403, message: "Invalid JWT token", success: false });
+  }
+
+  const users = await User.find({}).select(["fullName", "role", "email", "username"]);
+
+  res.status(200).json({ status: 200, success: true, data: users });
+};
+
+exports.getUser = async (req, res) => {
+  const { id } = req.params;
+
+  const user = await User.findById({ _id: id });
+
+  if (!user) {
+    return res.status(404).json({ status: 404, message: "No user found", success: false });
+  }
+
+  const { fullName, username, email, role } = user;
+  res.status(200).json({ status: 200, success: true, data: { fullName, username, email, role } });
+};
